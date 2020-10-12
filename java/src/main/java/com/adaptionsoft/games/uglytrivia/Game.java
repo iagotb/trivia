@@ -1,35 +1,23 @@
 package com.adaptionsoft.games.uglytrivia;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class Game {
-    Players players;
+    private Players players;
+	private Questions questions;
 
 	int[] places = new int[6];
     int[] purses  = new int[6];
     boolean[] inPenaltyBox  = new boolean[6];
-    
-    LinkedList<String> popQuestions = new LinkedList<>();
-    LinkedList<String> scienceQuestions = new LinkedList<>();
-    LinkedList<String> sportsQuestions = new LinkedList<>();
-    LinkedList<String> rockQuestions = new LinkedList<>();
-    
+
     boolean isGettingOutOfPenaltyBox;
-    
-    public  Game(Players players){
+
+    public  Game(Players players, Questions questions){
     	this.players = players;
-    	for (int i = 0; i < 50; i++) {
-			popQuestions.addLast("Pop Question " + i);
-			scienceQuestions.addLast(("Science Question " + i));
-			sportsQuestions.addLast(("Sports Question " + i));
-			rockQuestions.addLast(createRockQuestion(i));
-    	}
+    	this.questions = questions;
     }
 
-	public String createRockQuestion(int index){
-		return "Rock Question " + index;
-	}
-	
 	public boolean isPlayable() {
 		return (players.size() >= 2);
 	}
@@ -60,7 +48,7 @@ public class Game {
 						+ "'s new location is " 
 						+ places[players.getCurrentPlayerPosition()]);
 				System.out.println("The category is " + currentCategory());
-				askQuestion();
+				askQuestion(currentCategory());
 			} else {
 				System.out.println(players.getCurrentPlayer() + " is not getting out of the penalty box");
 				isGettingOutOfPenaltyBox = false;
@@ -75,34 +63,25 @@ public class Game {
 					+ "'s new location is " 
 					+ places[players.getCurrentPlayerPosition()]);
 			System.out.println("The category is " + currentCategory());
-			askQuestion();
+			askQuestion(currentCategory());
 		}
 		
 	}
 
-	private void askQuestion() {
-		if (currentCategory().equals("Pop"))
-			System.out.println(popQuestions.removeFirst());
-		if (currentCategory().equals("Science"))
-			System.out.println(scienceQuestions.removeFirst());
-		if (currentCategory().equals("Sports"))
-			System.out.println(sportsQuestions.removeFirst());
-		if (currentCategory().equals("Rock"))
-			System.out.println(rockQuestions.removeFirst());		
+	private void askQuestion(Category category) {
+		this.questions.getNextQuestionFromCategory(category).ifPresent(question -> {
+			System.out.println(question.getDescription());
+			questions.removeQuestion(question.getId());
+		});
 	}
 	
 	
-	private String currentCategory() {
-		if (places[players.getCurrentPlayerPosition()] == 0) return "Pop";
-		if (places[players.getCurrentPlayerPosition()] == 4) return "Pop";
-		if (places[players.getCurrentPlayerPosition()] == 8) return "Pop";
-		if (places[players.getCurrentPlayerPosition()] == 1) return "Science";
-		if (places[players.getCurrentPlayerPosition()] == 5) return "Science";
-		if (places[players.getCurrentPlayerPosition()] == 9) return "Science";
-		if (places[players.getCurrentPlayerPosition()] == 2) return "Sports";
-		if (places[players.getCurrentPlayerPosition()] == 6) return "Sports";
-		if (places[players.getCurrentPlayerPosition()] == 10) return "Sports";
-		return "Rock";
+	private Category currentCategory() {
+		int currentPlace = places[players.getCurrentPlayerPosition()];
+		if (currentPlace == 0 || currentPlace == 4 || currentPlace == 8) return Category.POP;
+		if (currentPlace == 1 || currentPlace == 5 || currentPlace == 9) return Category.SCIENCE;
+		if (currentPlace == 2 || currentPlace == 6 || currentPlace == 10) return Category.SPORTS;
+		return Category.ROCK;
 	}
 
 	public boolean wasCorrectlyAnswered() {
