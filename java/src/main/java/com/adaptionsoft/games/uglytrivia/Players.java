@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Players {
 
-    private List<Player> players = new ArrayList<Player>();
+    private List<Player> players;
 
     private int currentPlayerPosition;
 
@@ -29,14 +29,11 @@ public class Players {
 
     public void nextPlayer() {
         this.currentPlayerPosition++;
-        if (getCurrentPlayerPosition() == players.size()) {
-            setCurrentPlayerPosition(0);
+        if (this.currentPlayerPosition == players.size()) {
+            this.currentPlayerPosition = 0;
         }
     }
 
-    public void setCurrentPlayerPosition(int position) {
-        this.currentPlayerPosition = position;
-    }
     public int getCurrentPlayerPosition() {
         return this.currentPlayerPosition;
     }
