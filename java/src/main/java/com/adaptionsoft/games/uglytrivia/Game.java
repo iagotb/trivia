@@ -3,8 +3,9 @@ package com.adaptionsoft.games.uglytrivia;
 import java.util.LinkedList;
 
 public class Game {
-    Players players = new Players();
-    int[] places = new int[6];
+    Players players;
+
+	int[] places = new int[6];
     int[] purses  = new int[6];
     boolean[] inPenaltyBox  = new boolean[6];
     
@@ -15,7 +16,8 @@ public class Game {
     
     boolean isGettingOutOfPenaltyBox;
     
-    public  Game(){
+    public  Game(Players players){
+    	this.players = players;
     	for (int i = 0; i < 50; i++) {
 			popQuestions.addLast("Pop Question " + i);
 			scienceQuestions.addLast(("Science Question " + i));
@@ -33,9 +35,6 @@ public class Game {
 	}
 
 	public boolean add(String playerName) {
-
-
-		players.add(new Player(playerName));
 		places[players.size()] = 0;
 		purses[players.size()] = 0;
 		inPenaltyBox[players.size()] = false;
@@ -117,14 +116,11 @@ public class Game {
 						+ " Gold Coins.");
 				
 				boolean winner = didPlayerWin();
-				nextPlayer();
-				if (getCurrentPlayer() == players.size()) {
-					setCurrentPlayer(0);
-				}
+				players.nextPlayer();
 
 				return winner;
 			} else {
-				nextPlayer();
+				players.nextPlayer();
 				if (getCurrentPlayer() == players.size()) setCurrentPlayer(0);
 				return true;
 			}
@@ -141,7 +137,7 @@ public class Game {
 					+ " Gold Coins.");
 			
 			boolean winner = didPlayerWin();
-			nextPlayer();
+			players.nextPlayer();
 			if (getCurrentPlayer() == players.size()) setCurrentPlayer(0);
 
 			return winner;
@@ -152,16 +148,12 @@ public class Game {
 		players.setCurrentPlayerPosition(position);
 	}
 
-	private void nextPlayer() {
-		players.nextPlayer();
-	}
-
 	public boolean wrongAnswer(){
 		System.out.println("Question was incorrectly answered");
 		System.out.println(players.getCurrentPlayer() + " was sent to the penalty box");
 		inPenaltyBox[getCurrentPlayer()] = true;
 
-		nextPlayer();
+		players.nextPlayer();
 		if (getCurrentPlayer() == players.size()) setCurrentPlayer(0);
 		return true;
 	}

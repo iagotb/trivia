@@ -9,6 +9,11 @@ public class Players {
 
     private int currentPlayerPosition;
 
+    public Players(List<Player> players) {
+        this.players = players;
+        this.currentPlayerPosition = 0;
+    }
+
     public void add(Player player) {
         players.add(player);
     }
@@ -24,6 +29,9 @@ public class Players {
 
     public void nextPlayer() {
         this.currentPlayerPosition++;
+        if (getCurrentPlayerPosition() == players.size()) {
+            setCurrentPlayerPosition(0);
+        }
     }
 
     public void setCurrentPlayerPosition(int position) {
